@@ -47,19 +47,122 @@
     </header>
     <div class="page-wrap">
         <div class="code-box box-direction">
-            <div class="top-boxes editor-box"></div>
+            <div class="top-boxes editor-box" id="editor">
+                <div id="box-html"></div>
+                <div id="box-css"></div>
+                <div id="box-js"></div>
+            </div>
             <!-- 拖动条 -->
             <div id="resizer" class="resizer">
                 <span></span>
+            </div>
+            <!-- 内容展示区 -->
+            <div class="result-div result">
+
             </div>
         </div>
     </div>
     <footer class="site-footer">
 
     </footer>
-    <script src=""></script>
+    <script src="./lib/scripts/jquery-2.1.4.js"></script>
     <script>
+        /*全局变量 sc */
+        window.sc = {
+            winSize : {
+                "width" : window.innerWidth || $(document).innerWidth(),
+                "height" : window.innerHeight || $(document).height()
+            }
+        };
+        var bindResizer = (function() {
+            var $resizer = $("#resizer"),           //拖动条
+                    _resizeDirection,
+                    _resizeRight = false,
+                    _limitMin,
+                    _limitMax,
+                    _headerHeight,
+                    ele_editor = document.getElementById("editor");           //编辑区
+            var _minWidth = 216,
+                    _minHeight = 125;
 
+            function _init() {
+                $resizer.off();                 //清除全部事件
+                _resizeDirection = $("body").hasClass("layout-top") ? "horizonal" : "vertical";     //判断方向
+                _resizeRight = $("body").hasClass("layout-right") ? true : false;                  //左右颠倒
+                _headerHeight = $("header").height();
+                if(_resizeDirection === "vertical") {
+                    _limitMax = sc.winSize.width - $resizer.width();
+                    _limitMin = _minWidth;
+                }else {
+                    _limitMax = sc.winSize.height - $resizer.height();
+                    _limitMin = _minHeight;
+                }
+
+                _runAction();
+            }
+
+            function _runAction() {
+                $resizer.on("mousedown", function(event) {
+                    event.preventDefault();     //必须清除全部事件
+                    if(_resizeDirection === "vertical") {
+                        var eleWidth = ele_editor.style.width;
+                        ele_editor.style.width = eleWidth < _limitMin ? _limitMin :  eleWidth;
+                        ele_editor.style.width = eleWidth > _limitMax ? _limitMax : eleWidth;
+                    }else {
+                        var eleHeight = ele_editor.style.height;
+                        ele_editor.style.height = eleHeight < _limitMin ? _limitMin :  eleHeight;
+                        ele_editor.style.height= eleHeight > _limitMax ? _limitMax : eleHeight;
+                    }
+                    $(document).on("mousemove", resizeMove).on("mouseup", resizeEnd);    //添加两组事件
+                })
+            }
+
+            function resizeMove(event) {
+                event.preventDefault();
+                if(_resizeDirection === "vertical") {
+                    var dis = event.pageX;
+                    if(_resizeRight) {
+                        dis = sc.winSize.width - dis;
+                    }
+                    ele_editor.style.width = dis + "px";
+                }else {
+                    var dis = event.pageY;
+                    ele_editor.style.height = (dis - _headerHeight) + "px";
+                }
+            }
+            function resizeEnd(event) {
+                $(document).off("mousemove", resizeMove).off("mouseup", resizeEnd);
+            }
+
+            //设置最小值
+            function setMinValue(x, y) {
+                _minWidth = x;
+                _minHeight = y;
+            }
+
+            function _reset() {
+
+            }
+            return {
+                init : _init,
+                setMinValue : setMinValue
+            }
+        })();
+        jQuery(document).ready(function($) {
+            bindResizer.init();
+        });
+
+        /*浏览器窗口发生变化，重置所有内容*/
+        $(window).on("resize", function() {
+            console.log("重置");
+            window.sc = {
+                winSize : {
+                    "width" : window.innerWidth || $(document).innerWidth(),
+                    "height" : window.innerHeight || $(document).height()
+                }
+            };
+            bindResizer.init();
+        })
     </script>
 </body>
 </html>
