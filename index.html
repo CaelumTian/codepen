@@ -55,6 +55,9 @@
             <!-- 拖动条 -->
             <div id="resizer" class="resizer">
                 <span></span>
+                <div id="editor-width" class="editor-width">
+                    210px
+                </div>
             </div>
             <!-- 内容展示区 -->
             <div class="result-div result">
@@ -76,6 +79,7 @@
         };
         var bindResizer = (function() {
             var $resizer = $("#resizer"),           //拖动条
+                    $showBlock = $("#editor-width"),
                     _resizeDirection,
                     _resizeRight = false,
                     _limitMin,
@@ -104,6 +108,9 @@
             function _runAction() {
                 $resizer.on("mousedown", function(event) {
                     event.preventDefault();     //必须清除全部事件
+                    $showBlock.css({
+                        "opacity" : 1
+                    });
                     if(_resizeDirection === "vertical") {
                         var eleWidth = ele_editor.style.width;
                         ele_editor.style.width = eleWidth < _limitMin ? _limitMin :  eleWidth;
@@ -125,12 +132,17 @@
                         dis = sc.winSize.width - dis;
                     }
                     ele_editor.style.width = dis + "px";
+                    $showBlock.text($(ele_editor).css("width"));
                 }else {
                     var dis = event.pageY;
                     ele_editor.style.height = (dis - _headerHeight) + "px";
+                    $showBlock.text($(ele_editor).css("height"));
                 }
             }
             function resizeEnd(event) {
+                $showBlock.css({
+                    "opacity" : 0
+                });
                 $(document).off("mousemove", resizeMove).off("mouseup", resizeEnd);
             }
 
@@ -139,7 +151,6 @@
                 _minWidth = x;
                 _minHeight = y;
             }
-
             function _reset() {
 
             }

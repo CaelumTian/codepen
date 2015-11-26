@@ -2,6 +2,7 @@
 html,
 body {
   height: 100%;
+  overflow: hidden;
 }
 body.editor {
   background-color: #1d1f10;
@@ -45,6 +46,11 @@ body.layout-side .result-div {
   height: 100%;
   overflow: hidden;
 }
+body.layout-side .editor-width {
+  bottom: 15px;
+  left: 50%;
+  padding: 1px 4px;
+}
 body.layout-top .top-boxes {
   width: 100%;
   height: 350px;
@@ -66,6 +72,10 @@ body.layout-top .resizer span {
 }
 body.layout-top .box-direction {
   flex-direction: column;
+}
+body.layout-top .editor-width {
+  left: 50%;
+  margin-top: -7px;
 }
 body.layout-right #editor {
   order: 3;
@@ -167,4 +177,17 @@ body.layout-right .resizer {
   background: #343436;
   border-top: 1px solid #3E3E3F;
   z-index: 10;
+}
+.editor-width {
+  position: absolute;
+  z-index: 50;
+  background: #eee;
+  color: #333;
+  padding: 4px 8px;
+  border-radius: 10px;
+  font-size: 9px;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  transition: opacity 0.1s;
 }
