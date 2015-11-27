@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./lib/styles/css/base.css">
     <link rel="stylesheet" href="./lib/styles/css/editor.css">
 </head>
-<body class="layout-top editor">
+<body class="layout-side editor">
     <header class="main-header">
         <div class="title-area">
             <a href="/" class="logo">
@@ -51,7 +51,7 @@
                 <div class="editor-resizer"></div>  <!-- HTML 控制条 -->
                 <div id="box-html" class="box">
                     <div class="box-title">
-                        <div class="box-handle"></div> <!-- 拖拽用 -->
+                        <div class="box-handle" data-id=0></div> <!-- 拖拽用 -->
                         <div class="box-action-left">
                             <h2>
                                 <button class="btn small-btn btn-b-black">
@@ -70,7 +70,7 @@
                 <div class="editor-resizer"></div>  <!-- CSS控制条 -->
                 <div id="box-css" class="box">
                     <div class="box-title">
-                        <div class="box-handle"></div> <!-- 拖拽用 -->
+                        <div class="box-handle" id="css_handle" data-id=1></div> <!-- 拖拽用 -->
                         <div class="box-action-left">
                             <h2>
                                 <button class="btn small-btn btn-b-black">
@@ -89,7 +89,7 @@
                 <div class="editor-resizer"></div>  <!-- JS控制条 -->
                 <div id="box-js" class="box">
                     <div class="box-title">
-                        <div class="box-handle"></div> <!-- 拖拽用 -->
+                        <div class="box-handle" id="js_handle" data-id=2></div> <!-- 拖拽用 -->
                         <div class="box-action-left">
                             <h2>
                                 <button class="btn small-btn btn-b-black">
@@ -142,6 +142,7 @@
                     ele_editor = document.getElementById("editor");           //编辑区
             var _minWidth = 216,
                     _minHeight = 125;
+            var _disX, _disY;
 
             function _init() {
                 $resizer.off();                 //清除全部事件
@@ -166,10 +167,12 @@
                         "opacity" : 1
                     });
                     if(_resizeDirection === "vertical") {
+                        _disX = event.pageX - $(event.target).offset().left;
                         var eleWidth = ele_editor.style.width;
                         ele_editor.style.width = eleWidth < _limitMin ? _limitMin :  eleWidth;
                         ele_editor.style.width = eleWidth > _limitMax ? _limitMax : eleWidth;
                     }else {
+                        _disY = event.pageY - $(event.target).offset().top + 4;     //这里有4px微调，不知道为什么
                         var eleHeight = ele_editor.style.height;
                         ele_editor.style.height = eleHeight < _limitMin ? _limitMin :  eleHeight;
                         ele_editor.style.height= eleHeight > _limitMax ? _limitMax : eleHeight;
@@ -185,11 +188,11 @@
                     if(_resizeRight) {
                         dis = sc.winSize.width - dis;
                     }
-                    ele_editor.style.width = dis + "px";
+                    ele_editor.style.width = (dis - _disX) + "px";
                     $showBlock.text($(ele_editor).css("width"));
                 }else {
                     var dis = event.pageY;
-                    ele_editor.style.height = (dis - _headerHeight) + "px";
+                    ele_editor.style.height = (dis - _headerHeight - _disY) + "px";
                     $showBlock.text($(ele_editor).css("height"));
                 }
             }
@@ -213,8 +216,83 @@
                 setMinValue : setMinValue
             }
         })();
+        /*绑定代码区*/
+        var bindBoxHandle = (function() {
+            var $cssHandle = $("#css_handle"),
+                    $jsHandle = $("#js_handle");
+            var $boxHandle = $(".box-handle");
+            var $boxes = $(".box"),                  //代码块，动态修改
+                    $editor = $("#editor");          //代码块容器
+            var _resizeDirection,
+                    _editorContent,                  //容器空间
+                    _minContent,                     //最小容器空间
+                    $preEle,                         //前一个box元素
+                    $curEle,                         //当前元素
+                    $nextEle,
+                    _headerHeight;
+            var _resizerBorder = {
+                "height" : 3
+            };
+            var _disX, _disY;
+            function _init() {
+                _headerHeight = $("header").height();
+                _resizeDirection = $("body").hasClass("layout-top") ? "horizonal" : "vertical";     //判断方向
+                if(_resizeDirection === "vertical") {
+                    _editorContent = $editor.height();               //容器空间尺寸
+                    var height = (_editorContent - 3 * _resizerBorder.height) / 3;
+                    _minContent = $cssHandle.height();
+                    $boxes.css({
+                        "height" : changePencent(height, _editorContent)
+                    })
+                }
+                $boxHandle.on("mousedown", function(event) {
+                    event.preventDefault();
+                    _disY = event.pageY - $(event.target).offset().top;
+                    var $target = $(event.target);
+                    var preIndex = parseInt($target.attr("data-id"));           //当前索引
+                    $curEle = $($boxes[preIndex]);
+                    $preEle = $($boxes[preIndex - 1]);
+                    $nextEle = $($boxes[preIndex + 1]);
+                    $(document).on("mousemove", handleMove).on("mouseup", handleUp);
+                })
+            }
+
+            function handleMove(event) {
+                event.preventDefault();
+                var $target = $(event.target);
+                if(_resizeDirection === "vertical") {
+                    var minPercent = _minHeight /  _editorContent;
+                    var topHeight = event.pageY - _headerHeight - _disY - 9;
+                    var topPercent = changePencent(topHeight, _editorContent);
+                    var curPercent = 100 - parseFloat($nextEle[0].style.height) - parseFloat(topPercent);
+                    console.log($nextEle.height());
+
+                    $preEle.css({
+                        "height" : topPercent
+                    })
+                    $curEle.css({
+                        "height" : curPercent + "%"
+                    })
+                    $nextEle.css({
+                        "height" : (100 - parseFloat(topPercent) - parseFloat(curPercent)) + "%"
+                    })
+                }
+            }
+            function handleUp(event) {
+                $(document).off("mousemove", handleMove).off("mouseup", handleUp);
+            }
+
+            function changePencent(tval, cval) {
+                return (tval / cval) * 100 + "%";
+            }
+
+            return {
+                init : _init
+            }
+        })();
         jQuery(document).ready(function($) {
             bindResizer.init();
+            bindBoxHandle.init();
         });
 
         /*浏览器窗口发生变化，重置所有内容*/
