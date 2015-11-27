@@ -218,91 +218,97 @@
         })();
         /*绑定代码区*/
         var bindBoxHandle = (function() {
-            var $cssHandle = $("#css_handle"),
-                    $jsHandle = $("#js_handle");
-            var $boxHandle = $(".box-handle");
-            var $boxes = $(".box"),                  //代码块，动态修改
-                    $editor = $("#editor");          //代码块容器
-            var _resizeDirection,
-                    _editorContent,                  //容器空间
-                    _minContent,                     //最小容器空间
-                    $preEle,                         //前一个box元素
-                    $curEle,                         //当前元素
-                    $nextEle,
-                    _headerHeight;
-            var _resizerBorder = {
+            $cssHandle = $("#css_handle");
+            var $boxHandle = $(".box-handle"),
+                    $boxes = $(".box"),             //代码块
+                    $editor = $("#editor");		    //代码块容器
+            var _resizerDirection,
+                    _editorContent,                 //容器空间
+                    _minRatio,                    //最小空间 (百分数)
+                    _maxRatio,                    //最大空间 (百分数)
+                    _extraRatio,                  //三条线，额外空间
+                    _headerHeight,                  //头部高度
+                    _diX,
+                    _dixY,
+                    $preEle,
+                    $curEle,
+                    $nextEle;
+            var _resizerBorder = {             //修正边框
                 "height" : 3
-            };
-            var _disX, _disY;
+            }
             function _init() {
                 _headerHeight = $("header").height();
                 _resizeDirection = $("body").hasClass("layout-top") ? "horizonal" : "vertical";     //判断方向
                 if(_resizeDirection === "vertical") {
-                    _editorContent = $editor.height();               //容器空间尺寸
-                    var height = (_editorContent - 3 * _resizerBorder.height) / 3;
-                    console.log(height);
-                    _minContent = $cssHandle.height();
+                    _editorContent = $editor.height();
+                    _minRatio = $("#css_handle").height() / _editorContent;
+                    _maxRatio = 1 - 2 * _minRatio;
+                    _extraRatio = 9 / _editorContent;
                     $boxes.css({
-                        "height" : changePencent(height, _editorContent)
+                        "height" : changePercent((_editorContent - 3 * _resizerBorder.height) / 3, _editorContent)
                     })
                 }
                 $boxHandle.on("mousedown", function(event) {
                     event.preventDefault();
-                    _disY = event.pageY - $(event.target).offset().top;
-                    console.log(_disY);
-                    var $target = $(event.target);
-                    var preIndex = parseInt($target.attr("data-id"));           //当前索引
-                    $curEle = $($boxes[preIndex]);
-                    $preEle = $($boxes[preIndex - 1]);
-                    $nextEle = $($boxes[preIndex + 1]);
+                    var $target = $(event.target),
+                            index = parseInt($target.attr("data-id"));
+                    $curEle = $($boxes[index]);
+                    $preEle = $($boxes[index - 1]);
+                    $nextEle = $($boxes[index + 1]);
+                    if(_resizeDirection === "vertical") {
+                        _disY = event.pageY - $(event.target).offset().top;    //鼠标在边框上的距离
+                    }
                     $(document).on("mousemove", handleMove).on("mouseup", handleUp);
                 })
             }
 
             function handleMove(event) {
-                /*补填一个最大值判断*/
                 event.preventDefault();
                 var $target = $(event.target);
                 if(_resizeDirection === "vertical") {
-                    var _minPercent = changePencent(_minContent, _editorContent);
-                    console.log(_minPercent);
-                    var topHeight = event.pageY - _headerHeight - _disY - 9;     //这里根据计算是 -6 但是 -9 正好不知道为什么
-                    var topPercent = changePencent(topHeight, _editorContent);
+                    if($nextEle !== undefined) {
+                        var topHeight = event.pageY - _headerHeight - _disY - 9;   //这里计算值是6？bug
+                        var topRatio = topHeight / _editorContent,
+                                topRatio = topRatio < _minRatio ? _minRatio : topRatio,
+                                topRatio = topRatio > _maxRatio ? _maxRatio : topRatio,
+                                currRatio = 1 - topRatio - _extraRatio - parseFloat($nextEle[0].style.height) / 100;
+                        if(currRatio < _minRatio) {
 
-                    topPercent = parseFloat(topPercent) < parseFloat(_minPercent) ? _minPercent : topPercent;
+                            currRatio = _minRatio;      //这时是css部分，撞击js部分
+                            var nextRatio = 1 - currRatio - topRatio - _extraRatio;
+                            nextRatio = nextRatio < _minRatio ? _minRatio : nextRatio;
 
-                    var extraPercent = changePencent(9, _editorContent);
-
-                    var curPercent = 100 - parseFloat($nextEle[0].style.height) - parseFloat(topPercent) - parseFloat(extraPercent);
-
-                    if(parseFloat(curPercent) < parseFloat(_minPercent)) {
-                        curPercent = _minPercent;
-                        var nextPercent = 100 - parseFloat(curPercent) -  parseFloat(topPercent) - parseFloat(extraPercent);
-                        nextPercent = parseFloat(nextPercent) < parseFloat(_minPercent) ? _minPercent : nextPercent;
-                        $nextEle.css({
-                            "height" : nextPercent + "%"
+                            $nextEle.css({
+                                "height" : changePercent(nextRatio)
+                            })
+                        }
+                        $preEle.css({
+                            "height" : changePercent(topRatio)
+                        })
+                        $curEle.css({
+                            "height" : changePercent(currRatio)
                         })
                     }
-                    $preEle.css({
-                        "height" : topPercent
-                    })
-                    $curEle.css({
-                        "height" : curPercent + "%"
-                    })
                 }
             }
+
             function handleUp(event) {
                 $(document).off("mousemove", handleMove).off("mouseup", handleUp);
             }
 
-            function changePencent(tval, cval) {
-                return (tval / cval) * 100 + "%";
+            function changePercent() {
+                if(arguments.length === 1) {
+                    return arguments[0] * 100 + "%";
+                }
+                if(arguments.length === 2) {
+                    return (arguments[0] / arguments[1]) * 100 + "%";
+                }
             }
 
             return {
                 init : _init
             }
-        })();
+        })()
         jQuery(document).ready(function($) {
             bindResizer.init();
             bindBoxHandle.init();
