@@ -240,6 +240,7 @@
                 if(_resizeDirection === "vertical") {
                     _editorContent = $editor.height();               //容器空间尺寸
                     var height = (_editorContent - 3 * _resizerBorder.height) / 3;
+                    console.log(height);
                     _minContent = $cssHandle.height();
                     $boxes.css({
                         "height" : changePencent(height, _editorContent)
@@ -247,7 +248,7 @@
                 }
                 $boxHandle.on("mousedown", function(event) {
                     event.preventDefault();
-                    _disY = event.pageY - $(event.target).offset().top;
+                    _disY = event.pageY - $(event.target).offset().top;      //这几个计算务必注意
                     var $target = $(event.target);
                     var preIndex = parseInt($target.attr("data-id"));           //当前索引
                     $curEle = $($boxes[preIndex]);
@@ -261,10 +262,11 @@
                 event.preventDefault();
                 var $target = $(event.target);
                 if(_resizeDirection === "vertical") {
-                    var minPercent = _minHeight /  _editorContent;
-                    var topHeight = event.pageY - _headerHeight - _disY - 9;
+                    var topHeight = event.pageY - _headerHeight - _disY - 6;
                     var topPercent = changePencent(topHeight, _editorContent);
-                    var curPercent = 100 - parseFloat($nextEle[0].style.height) - parseFloat(topPercent);
+                    var extraPercent = changePencent(9, _editorContent);
+                    console.log(extraPercent);
+                    var curPercent = 100 - parseFloat($nextEle[0].style.height) - parseFloat(topPercent) - parseFloat(extraPercent);
                     console.log($nextEle.height());
 
                     $preEle.css({
@@ -272,9 +274,6 @@
                     })
                     $curEle.css({
                         "height" : curPercent + "%"
-                    })
-                    $nextEle.css({
-                        "height" : (100 - parseFloat(topPercent) - parseFloat(curPercent)) + "%"
                     })
                 }
             }
