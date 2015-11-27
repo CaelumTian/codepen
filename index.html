@@ -255,6 +255,7 @@
                     $curEle = $($boxes[index]);
                     $preEle = $($boxes[index - 1]);
                     $nextEle = $($boxes[index + 1]);
+                    console.log($nextEle);
                     if(_resizeDirection === "vertical") {
                         _disY = event.pageY - $(event.target).offset().top;    //鼠标在边框上的距离
                     }
@@ -266,7 +267,7 @@
                 event.preventDefault();
                 var $target = $(event.target);
                 if(_resizeDirection === "vertical") {
-                    if($nextEle !== undefined) {
+                    if($nextEle.length !== 0) {   //说明选中的css
                         var topHeight = event.pageY - _headerHeight - _disY - 9;   //这里计算值是6？bug
                         var topRatio = topHeight / _editorContent,
                                 topRatio = topRatio < _minRatio ? _minRatio : topRatio,
@@ -287,6 +288,28 @@
                         })
                         $curEle.css({
                             "height" : changePercent(currRatio)
+                        })
+                    }else {
+                        var topHeight = event.pageY - _headerHeight - _disY - 6;   //这里计算值是6？bug
+                        var currHeight = _editorContent - topHeight;
+                        var $htmlEle = $($(".box")[0]);
+                        var currRatio = currHeight / _editorContent,
+                                currRatio = currRatio < _minRatio ? _minRatio : currRatio;
+                                currRatio = currRatio > _maxRatio ? _maxRatio : currRatio;
+                        var preRatio = 1 - currRatio - _extraRatio - parseFloat($htmlEle[0].style.height) / 100;
+                        if(preRatio < _minRatio) {
+                            preRatio = _minRatio;
+                            var htmlRatio = 1 - currRatio - preRatio - _extraRatio;
+                            htmlRatio = htmlRatio < _minRatio ? _minRatio : htmlRatio;
+                            $htmlEle.css({
+                                "height" : changePercent(htmlRatio)
+                            })
+                        }
+                        $curEle.css({
+                            "height" : changePercent(currRatio)
+                        })
+                        $preEle.css({
+                            "height" : changePercent(preRatio)
                         })
                     }
                 }
