@@ -248,7 +248,8 @@
                 }
                 $boxHandle.on("mousedown", function(event) {
                     event.preventDefault();
-                    _disY = event.pageY - $(event.target).offset().top;      //这几个计算务必注意
+                    _disY = event.pageY - $(event.target).offset().top;
+                    console.log(_disY);
                     var $target = $(event.target);
                     var preIndex = parseInt($target.attr("data-id"));           //当前索引
                     $curEle = $($boxes[preIndex]);
@@ -259,16 +260,29 @@
             }
 
             function handleMove(event) {
+                /*补填一个最大值判断*/
                 event.preventDefault();
                 var $target = $(event.target);
                 if(_resizeDirection === "vertical") {
-                    var topHeight = event.pageY - _headerHeight - _disY - 6;
+                    var _minPercent = changePencent(_minContent, _editorContent);
+                    console.log(_minPercent);
+                    var topHeight = event.pageY - _headerHeight - _disY - 9;     //这里根据计算是 -6 但是 -9 正好不知道为什么
                     var topPercent = changePencent(topHeight, _editorContent);
-                    var extraPercent = changePencent(9, _editorContent);
-                    console.log(extraPercent);
-                    var curPercent = 100 - parseFloat($nextEle[0].style.height) - parseFloat(topPercent) - parseFloat(extraPercent);
-                    console.log($nextEle.height());
 
+                    topPercent = parseFloat(topPercent) < parseFloat(_minPercent) ? _minPercent : topPercent;
+
+                    var extraPercent = changePencent(9, _editorContent);
+
+                    var curPercent = 100 - parseFloat($nextEle[0].style.height) - parseFloat(topPercent) - parseFloat(extraPercent);
+
+                    if(parseFloat(curPercent) < parseFloat(_minPercent)) {
+                        curPercent = _minPercent;
+                        var nextPercent = 100 - parseFloat(curPercent) -  parseFloat(topPercent) - parseFloat(extraPercent);
+                        nextPercent = parseFloat(nextPercent) < parseFloat(_minPercent) ? _minPercent : nextPercent;
+                        $nextEle.css({
+                            "height" : nextPercent + "%"
+                        })
+                    }
                     $preEle.css({
                         "height" : topPercent
                     })
