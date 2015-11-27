@@ -1,3 +1,5 @@
+@btn-b-black: #343436;
+@btnHoverColor: #484747;
 .main-header {
   height: 69px;
   min-width: 1000px;
@@ -29,6 +31,9 @@ i {
 .icon-resize:after {
   content: '\e9e8';
 }
+.icon-cancel:after {
+  content: '\e960';
+}
 .btn-insert:before{
   content: "";
   position: absolute;
@@ -57,4 +62,18 @@ i {
   cursor: pointer;
   text-align: center;
   font-weight: normal !important;
+  &:hover {
+    background: @btnHoverColor;
+  }
+}
+.btn-b-black {
+  background: @btn-b-black;
+  color: white !important;
+}
+.small-btn {
+  font-family: "Lato", "Lucida Grande","Lucida Sans Unicode", Tahoma, Sans-Serif;
+  font-size: 0.8rem;
+  padding: 2px 7px;
+  margin: 0 1px 0 0;
+  border-width: 1px;
 }

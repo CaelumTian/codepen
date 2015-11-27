@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="./lib/styles/css/base.css">
     <link rel="stylesheet" href="./lib/styles/css/editor.css">
 </head>
-<body class="layout-side editor">
+<body class="layout-top editor">
     <header class="main-header">
         <div class="title-area">
             <a href="/" class="logo">
@@ -48,9 +48,63 @@
     <div class="page-wrap">
         <div class="code-box box-direction">
             <div class="top-boxes editor-box" id="editor">
-                <div id="box-html"></div>
-                <div id="box-css"></div>
-                <div id="box-js"></div>
+                <div class="editor-resizer"></div>  <!-- HTML 控制条 -->
+                <div id="box-html" class="box">
+                    <div class="box-title">
+                        <div class="box-handle"></div> <!-- 拖拽用 -->
+                        <div class="box-action-left">
+                            <h2>
+                                <button class="btn small-btn btn-b-black">
+                                    <i class="icon icon-setting"></i>
+                                </button>
+                                <span>HTML</span>
+                            </h2>
+                        </div>
+                        <div class="box-action-right">
+                            <button class="btn small-btn btn-b-black">
+                                <i class="icon icon-cancel"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="editor-resizer"></div>  <!-- CSS控制条 -->
+                <div id="box-css" class="box">
+                    <div class="box-title">
+                        <div class="box-handle"></div> <!-- 拖拽用 -->
+                        <div class="box-action-left">
+                            <h2>
+                                <button class="btn small-btn btn-b-black">
+                                    <i class="icon icon-setting"></i>
+                                </button>
+                                <span>CSS</span>
+                            </h2>
+                        </div>
+                        <div class="box-action-right">
+                            <button class="btn small-btn btn-b-black">
+                                <i class="icon icon-cancel"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="editor-resizer"></div>  <!-- JS控制条 -->
+                <div id="box-js" class="box">
+                    <div class="box-title">
+                        <div class="box-handle"></div> <!-- 拖拽用 -->
+                        <div class="box-action-left">
+                            <h2>
+                                <button class="btn small-btn btn-b-black">
+                                    <i class="icon icon-setting"></i>
+                                </button>
+                                <span>JS</span>
+                            </h2>
+                        </div>
+                        <div class="box-action-right">
+                            <button class="btn small-btn btn-b-black">
+                                <i class="icon icon-cancel"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
             <!-- 拖动条 -->
             <div id="resizer" class="resizer">
