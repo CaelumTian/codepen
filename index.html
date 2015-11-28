@@ -48,7 +48,11 @@
     <div class="page-wrap">
         <div class="code-box box-direction">
             <div class="top-boxes editor-box" id="editor">
-                <div class="editor-resizer"></div>  <!-- HTML 控制条 -->
+                <div class="editor-resizer" data-id=0>
+                   <h2 class="box-visual-title">
+                      <span>HTML</span>
+                   </h2>
+                </div>  <!-- HTML 控制条 -->
                 <div id="box-html" class="box">
                     <div class="box-title">
                         <div class="box-handle" data-id=0></div> <!-- 拖拽用 -->
@@ -67,7 +71,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="editor-resizer"></div>  <!-- CSS控制条 -->
+                <div class="editor-resizer" data-id=1>
+                    <h2 class="box-visual-title">
+                        <span>CSS</span>
+                    </h2>
+                </div>  <!-- CSS控制条 -->
                 <div id="box-css" class="box">
                     <div class="box-title">
                         <div class="box-handle" id="css_handle" data-id=1></div> <!-- 拖拽用 -->
@@ -86,7 +94,11 @@
                         </div>
                     </div>
                 </div>
-                <div class="editor-resizer"></div>  <!-- JS控制条 -->
+                <div class="editor-resizer" data-id=2>
+                    <h2 class="box-visual-title">
+                        <span>JS</span>
+                    </h2>
+                </div>  <!-- JS控制条 -->
                 <div id="box-js" class="box">
                     <div class="box-title">
                         <div class="box-handle" id="js_handle" data-id=2></div> <!-- 拖拽用 -->
@@ -219,7 +231,7 @@
         /*绑定代码区*/
         var bindBoxHandle = (function() {
             $cssHandle = $("#css_handle");
-            var $boxHandle = $(".box-handle"),
+            var $boxHandle,
                     $boxes = $(".box"),             //代码块
                     $editor = $("#editor");		    //代码块容器
             var _resizerDirection,
@@ -234,12 +246,14 @@
                     $curEle,
                     $nextEle;
             var _resizerBorder = {             //修正边框
-                "height" : 3
+                "height" : 3,
+                "width" : 20
             }
             function _init() {
                 _headerHeight = $("header").height();
                 _resizeDirection = $("body").hasClass("layout-top") ? "horizonal" : "vertical";     //判断方向
                 if(_resizeDirection === "vertical") {
+                    $boxHandle = $(".box-handle");
                     _editorContent = $editor.height();
                     _minRatio = $("#css_handle").height() / _editorContent;
                     _maxRatio = 1 - 2 * _minRatio;
@@ -247,7 +261,17 @@
                     $boxes.css({
                         "height" : changePercent((_editorContent - 3 * _resizerBorder.height) / 3, _editorContent)
                     })
+                }else {
+                    $boxHandle = $(".editor-resizer");    //横向
+                    _editorContent = $editor.width();
+                    _minRatio = 0;
+                    _maxRatio = (_editorContent - 3 * _resizerBorder.width) / _editorContent;
+                    _extraRatio = _resizerBorder.width * 3 / _editorContent;
+                    $boxes.css({
+                        "width" : changePercent((_editorContent - 3 * _resizerBorder.width) / 3, _editorContent)
+                    })
                 }
+
                 $boxHandle.on("mousedown", function(event) {
                     event.preventDefault();
                     var $target = $(event.target),
@@ -255,10 +279,13 @@
                     $curEle = $($boxes[index]);
                     $preEle = $($boxes[index - 1]);
                     $nextEle = $($boxes[index + 1]);
-                    console.log($nextEle);
+
                     if(_resizeDirection === "vertical") {
-                        _disY = event.pageY - $(event.target).offset().top;    //鼠标在边框上的距离
+                        _disY = event.pageY - $target.offset().top;    //鼠标在边框上的距离
+                    }else {
+                        _disX = event.pageX - $target.offset().left;
                     }
+
                     $(document).on("mousemove", handleMove).on("mouseup", handleUp);
                 })
             }
@@ -269,12 +296,11 @@
                 if(_resizeDirection === "vertical") {
                     if($nextEle.length !== 0) {   //说明选中的css
                         var topHeight = event.pageY - _headerHeight - _disY - 9;   //这里计算值是6？bug
-                        var topRatio = topHeight / _editorContent,
-                                topRatio = topRatio < _minRatio ? _minRatio : topRatio,
-                                topRatio = topRatio > _maxRatio ? _maxRatio : topRatio,
-                                currRatio = 1 - topRatio - _extraRatio - parseFloat($nextEle[0].style.height) / 100;
+                        var topRatio = topHeight / _editorContent;
+                        topRatio = topRatio < _minRatio ? _minRatio : topRatio;
+                        topRatio = topRatio > _maxRatio ? _maxRatio : topRatio;
+                        var currRatio = 1 - topRatio - _extraRatio - parseFloat($nextEle[0].style.height) / 100;
                         if(currRatio < _minRatio) {
-
                             currRatio = _minRatio;      //这时是css部分，撞击js部分
                             var nextRatio = 1 - currRatio - topRatio - _extraRatio;
                             nextRatio = nextRatio < _minRatio ? _minRatio : nextRatio;
@@ -293,9 +319,9 @@
                         var topHeight = event.pageY - _headerHeight - _disY - 6;   //这里计算值是6？bug
                         var currHeight = _editorContent - topHeight;
                         var $htmlEle = $($(".box")[0]);
-                        var currRatio = currHeight / _editorContent,
-                                currRatio = currRatio < _minRatio ? _minRatio : currRatio;
-                                currRatio = currRatio > _maxRatio ? _maxRatio : currRatio;
+                        var currRatio = currHeight / _editorContent;
+                        currRatio = currRatio < _minRatio ? _minRatio : currRatio;
+                        currRatio = currRatio > _maxRatio ? _maxRatio : currRatio;
                         var preRatio = 1 - currRatio - _extraRatio - parseFloat($htmlEle[0].style.height) / 100;
                         if(preRatio < _minRatio) {
                             preRatio = _minRatio;
@@ -312,6 +338,77 @@
                             "height" : changePercent(preRatio)
                         })
                     }
+                }else {
+                    if($nextEle.length !== 0) {
+                        var topWidth = event.pageX - _resizerBorder.width - _disX;
+                        var topRatio = topWidth / _editorContent,
+                                topRatio = topRatio < _minRatio ? _minRatio : topRatio,
+                                topRatio = topRatio > _maxRatio ? _maxRatio : topRatio;
+                        var currRatio = 1 - topRatio - _extraRatio - parseFloat($nextEle[0].style.width) / 100;
+                        if(currRatio < _minRatio) {
+                            currRatio = _minRatio;      //这时是css部分，撞击js部分
+                            var nextRatio = 1 - currRatio - topRatio - _extraRatio;
+                            nextRatio = nextRatio < _minRatio ? _minRatio : nextRatio;
+
+                            $nextEle.css({
+                                "width" : changePercent(nextRatio)
+                            })
+                        }
+                        $preEle.css({
+                            "width" : changePercent(topRatio)
+                        })
+                        $curEle.css({
+                            "width" : changePercent(currRatio)
+                        })
+                    }else {
+                        var topWidth = event.pageX + (_resizerBorder.width - _disX),
+                                currWidth = _editorContent - topWidth;
+                        var $htmlEle = $($(".box")[0]);
+                        var currRatio = currWidth / _editorContent;
+
+                        currRatio = currRatio < _minRatio ? _minRatio : currRatio;
+                        currRatio = currRatio > _maxRatio ? _maxRatio : currRatio;
+
+                        var preRatio = 1 - currRatio - _extraRatio - parseFloat($htmlEle[0].style.width) / 100;
+
+                        if(preRatio < _minRatio) {
+                            preRatio = _minRatio;
+                            var htmlRatio = 1 - currRatio - preRatio - _extraRatio;
+                            htmlRatio = htmlRatio < _minRatio ? _minRatio : htmlRatio;
+                            $htmlEle.css({
+                                "width" : changePercent(htmlRatio)
+                            })
+                        }
+                        $curEle.css({
+                            "width" : changePercent(currRatio)
+                        })
+                        $preEle.css({
+                            "width" : changePercent(preRatio)
+                        })
+                    }
+                    if($preEle.width() < 180) {
+                        $preEle.prev().addClass("is-horiz");
+                    }else {
+                        $preEle.prev().removeClass("is-horiz");
+                    }
+                    if($curEle.width() < 180) {
+                        $curEle.prev().addClass("is-horiz");
+                    }else {
+                        $curEle.prev().removeClass("is-horiz");
+                    }
+                    //这里用这个简直了，我醉了
+                    try {
+                        if($htmlEle.width() < 180) {
+                            $htmlEle.prev().addClass("is-horiz");
+                        }else{
+                            $htmlEle.prev().removeClass("is-horiz");
+                        }
+                        if($nextEle.width() < 180) {
+                            $nextEle.prev().addClass("is-horiz");
+                        }else{
+                            $nextEle.prev().removeClass("is-horiz");
+                        }
+                    }catch(e){}
                 }
             }
 

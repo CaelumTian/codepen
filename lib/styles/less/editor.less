@@ -125,6 +125,23 @@ body.layout-top {
   .editor-resizer:first-child {
     cursor: auto;
   }
+  .box-visual-title {
+    position: absolute;
+    left: 60px;
+    top: 7px;
+    pointer-events: none;
+    transition: transform 0.3s;
+    transform-origin: left center;
+    z-index: 100;
+  }
+  .box-action-left h2 span {
+    visibility: hidden;
+  }
+  .is-horiz {
+    h2 {
+      transform: translate(-53px, -11px) rotate(90deg) scale(0.9);
+    }
+  }
 }
 body.layout-right {
   #editor {
@@ -258,7 +275,7 @@ body.layout-right {
   top: 0;
   z-index: 0;
 }
-.box-action-left {
+.box-action-left, .editor-resizer{
   float: left;
   padding-left: 5px;
   h2 {
