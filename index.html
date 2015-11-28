@@ -6,6 +6,11 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="renderer" content="webkit">
     <meta http-equiv="Cache-Control" content="no-siteapp">
+
+    <link rel="stylesheet" href="./lib/scripts/codemirror/lib/codemirror.css">
+    <link rel="stylesheet" href="./lib/scripts/codemirror/addon/scroll/simplescrollbars.css">
+    <link rel="stylesheet" href="./lib/scripts/codemirror/theme/monokai.css">
+
     <link rel="stylesheet" href="./lib/styles/css/reset.css">
     <link rel="stylesheet" href="./lib/styles/css/base.css">
     <link rel="stylesheet" href="./lib/styles/css/editor.css">
@@ -70,6 +75,9 @@
                             </button>
                         </div>
                     </div>
+                    <div class="code-wrap">
+                        <textarea id="code-html"></textarea>
+                    </div>
                 </div>
                 <div class="editor-resizer" data-id=1>
                     <h2 class="box-visual-title">
@@ -92,6 +100,9 @@
                                 <i class="icon icon-cancel"></i>
                             </button>
                         </div>
+                    </div>
+                    <div class="code-wrap">
+                        <textarea id="code-css"></textarea>
                     </div>
                 </div>
                 <div class="editor-resizer" data-id=2>
@@ -116,6 +127,9 @@
                             </button>
                         </div>
                     </div>
+                    <div class="code-wrap">
+                        <textarea id="code-js"></textarea>
+                    </div>
                 </div>
             </div>
             <!-- 拖动条 -->
@@ -134,6 +148,17 @@
     <footer class="site-footer">
 
     </footer>
+    <script src="./lib/scripts/codemirror/lib/codemirror.js"></script>
+    <script src="./lib/scripts/codemirror/addon/scroll/simplescrollbars.js"></script>
+    <script src="./lib/scripts/codemirror/addon/edit/closebrackets.js"></script>
+    <script src="./lib/scripts/codemirror/addon/edit/closetag.js"></script>
+    <script src="./lib/scripts/codemirror/addon/fold/xml-fold.js"></script>
+
+    <script src="./lib/scripts/codemirror/mode/javascript/javascript.js"></script>
+    <script src="./lib/scripts/codemirror/mode/css/css.js"></script>
+    <script src="./lib/scripts/codemirror/mode/xml/xml.js"></script>
+    <script src="./lib/scripts/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+
     <script src="./lib/scripts/jquery-2.1.4.js"></script>
     <script>
         /*全局变量 sc */
@@ -207,6 +232,9 @@
                     ele_editor.style.height = (dis - _headerHeight - _disY) + "px";
                     $showBlock.text($(ele_editor).css("height"));
                 }
+
+                /*更新细节*/
+                window.refresh();
             }
             function resizeEnd(event) {
                 $showBlock.css({
@@ -248,7 +276,7 @@
             var _resizerBorder = {             //修正边框
                 "height" : 3,
                 "width" : 20
-            }
+            };
             function _init() {
                 _headerHeight = $("header").height();
                 _resizeDirection = $("body").hasClass("layout-top") ? "horizonal" : "vertical";     //判断方向
@@ -410,6 +438,7 @@
                         }
                     }catch(e){}
                 }
+                window.refresh();
             }
 
             function handleUp(event) {
@@ -430,6 +459,55 @@
             }
         })()
         jQuery(document).ready(function($) {
+            var mixedMode = {
+                name: "htmlmixed",
+                scriptTypes: [{matches: /\/x-handlebars-template|\/x-mustache/i,
+                    mode: null},
+                    {matches: /(text|application)\/(x-)?vb(a|script)/i,
+                        mode: "vbscript"}]
+            };
+            window.codeHtml = CodeMirror.fromTextArea(document.getElementById("code-html"), {
+                lineNumbers: true,
+                mode : mixedMode,
+                scrollbarStyle : "overlay",
+                theme : "monokai",
+                lineWrapping: true,       //长文本换行
+                smartIndent: false,
+                autoCloseTags: true,
+                autoCloseBrackets: true
+            });
+
+            window.codeCss = CodeMirror.fromTextArea(document.getElementById("code-css"), {
+                lineNumbers: true,
+                mode : "css",
+                scrollbarStyle : "overlay",
+                theme : "monokai",
+                lineWrapping: true,       //长文本换行
+                smartIndent: false,
+                autoCloseTags: true,
+                autoCloseBrackets: true
+            });
+
+            window.codeJs = CodeMirror.fromTextArea(document.getElementById("code-js"), {
+                lineNumbers: true,
+                mode : "javascript",
+                scrollbarStyle : "overlay",
+                theme : "monokai",
+                lineWrapping: true,       //长文本换行
+                smartIndent: false,
+                autoCloseTags: true,
+                autoCloseBrackets: true
+            });
+
+            window.refresh = function() {
+                window.codeHtml.refresh();
+                window.codeCss.refresh();
+                window.codeJs.refresh();
+            };
+            $(".code-wrap").css({
+                "visibility" : "visible"
+            });
+
             bindResizer.init();
             bindBoxHandle.init();
         });

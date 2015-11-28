@@ -366,3 +366,9 @@ body.layout-right .resizer {
   right: 5px;
   top: 8px;
 }
+.code-wrap {
+  visibility: hidden;
+  min-width: 200px;
+  height: 100%;
+  height: calc(100% - 36px);
+}
