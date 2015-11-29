@@ -294,7 +294,24 @@ body.layout-right .resizer {
   top: 8px;
 }
 .code-wrap {
+  visibility: hidden;
   min-width: 200px;
   height: 100%;
   height: calc(100% - 36px);
+}
+.iframe-hock {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  z-index: 10;
+  background-color: transparent;
+}
+.result-iframe {
+  border: 0;
+  background: white;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
 }

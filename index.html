@@ -141,7 +141,8 @@
             </div>
             <!-- 内容展示区 -->
             <div class="result-div result">
-
+                <div class="iframe-hock"></div>
+                <iframe src="./text.html" frameborder="0" class="result-iframe" id="aimIframe"></iframe>
             </div>
         </div>
     </div>
@@ -232,15 +233,13 @@
                     ele_editor.style.height = (dis - _headerHeight - _disY) + "px";
                     $showBlock.text($(ele_editor).css("height"));
                 }
-
-                /*更新细节*/
-                window.refresh();
             }
             function resizeEnd(event) {
                 $showBlock.css({
                     "opacity" : 0
                 });
                 $(document).off("mousemove", resizeMove).off("mouseup", resizeEnd);
+                window.refresh();
             }
 
             //设置最小值
@@ -438,11 +437,11 @@
                         }
                     }catch(e){}
                 }
-                window.refresh();
             }
 
             function handleUp(event) {
                 $(document).off("mousemove", handleMove).off("mouseup", handleUp);
+                window.refresh();
             }
 
             function changePercent() {
@@ -457,7 +456,7 @@
             return {
                 init : _init
             }
-        })()
+        })();
         jQuery(document).ready(function($) {
             var mixedMode = {
                 name: "htmlmixed",
@@ -466,6 +465,10 @@
                     {matches: /(text|application)\/(x-)?vb(a|script)/i,
                         mode: "vbscript"}]
             };
+            var aimIframe = document.getElementById("aimIframe");
+            var iframeDocument;
+            var iframeBody;
+
             window.codeHtml = CodeMirror.fromTextArea(document.getElementById("code-html"), {
                 lineNumbers: true,
                 mode : mixedMode,
@@ -499,17 +502,68 @@
                 autoCloseBrackets: true
             });
 
+
             window.refresh = function() {
                 window.codeHtml.refresh();
                 window.codeCss.refresh();
                 window.codeJs.refresh();
             };
+
             $(".code-wrap").css({
                 "visibility" : "visible"
             });
 
             bindResizer.init();
             bindBoxHandle.init();
+
+
+            var cssTimeout;    //函数节流
+            var htmlTimeout;
+
+            window.codeCss.on("change", function(codeMirror, obj) {
+                var doc = codeMirror.doc;
+                iframeDocument = aimIframe.contentWindow.document;
+
+                clearTimeout(cssTimeout);
+                cssTimeout = setTimeout(function() {
+
+                    var currStyle = document.createElement("style");
+                    currStyle.id = "aimStyle";
+                    currStyle.textContent = doc.getValue();
+                    iframeDocument.getElementById("aimStyle").remove();    //删除这里
+
+                    iframeDocument.head.appendChild(currStyle);
+                }, 2000)
+            });
+
+            window.codeHtml.on("change", function(codeMirror, obj) {
+                var doc = codeMirror.doc;
+                iframeDocument = aimIframe.contentWindow.document;
+                iframeBody = iframeDocument.body;
+
+                clearTimeout(htmlTimeout);
+                htmlTimeout = setTimeout(function() {
+                    iframeBody.innerHTML = doc.getValue();
+                    window.codeJs.triggerOnKeyDown("change");
+                    window.codeCss.triggerOnKeyDown("change");
+                }, 2000)
+            });
+
+            window.codeJs.on("change", function(codeMirror, obj) {
+                console.log("发生改变");
+                var doc = codeMirror.doc;
+                iframeDocument = aimIframe.contentWindow.document;
+
+                var currScript = document.createElement("script");
+                currScript.id = "aimScript";
+                currScript.textContent = "try{" + doc.getValue() + "}catch(e){}";   //捕获掉这里所有的异常
+                try {
+                    iframeDocument.getElementById("aimScript").remove();
+                }catch(e){}
+                iframeDocument.body.appendChild(currScript);
+
+            })
+
         });
 
         /*浏览器窗口发生变化，重置所有内容*/
