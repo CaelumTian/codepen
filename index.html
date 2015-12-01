@@ -157,7 +157,7 @@
             </div>
             <!-- 内容展示区 -->
             <div class="result-div result">
-                <div class="iframe-hock"></div>
+                <div class="iframe-hock" id="iframe-hock"></div>
                 <iframe src="./text.html" frameborder="0" class="result-iframe" id="aimIframe"></iframe>
             </div>
         </div>
@@ -189,6 +189,7 @@
         var bindResizer = (function() {
             var $resizer = $("#resizer"),           //拖动条
                     $showBlock = $("#editor-width"),
+                    $iframeHock = $("#iframe-hock"),
                     _resizeDirection,
                     _resizeRight = false,
                     _limitMin,
@@ -233,6 +234,9 @@
                         ele_editor.style.height = eleHeight < _limitMin ? _limitMin :  eleHeight;
                         ele_editor.style.height= eleHeight > _limitMax ? _limitMax : eleHeight;
                     }
+                    $iframeHock.css({
+                        "display" : "block"
+                    });
                     $(document).on("mousemove", resizeMove).on("mouseup", resizeEnd);    //添加两组事件
                 })
             }
@@ -255,6 +259,9 @@
             function resizeEnd(event) {
                 $showBlock.css({
                     "opacity" : 0
+                });
+                $iframeHock.css({
+                    "display" : "none"
                 });
                 $(document).off("mousemove", resizeMove).off("mouseup", resizeEnd);
                 window.refresh();
@@ -644,7 +651,7 @@
             });
 
             $("#changeView").on("click", function(event){
-                console.log("开始");
+                event.stopPropagation();
                 var $view = $(this).next();
 
                 if($view.hasClass("view-switcher-active")) {
@@ -683,6 +690,11 @@
                 window.reset();
             });
 
+            $("header").on("click", function(event) {
+                $(".view-switcher").css({
+                    "display" : "none"
+                }).removeClass("view-switcher-active");
+            });
 
             $("button").on("mousedown", function(event) {
                 $(this).css({
