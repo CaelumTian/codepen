@@ -29,6 +29,30 @@ i {
 .icon-cancel:after {
   content: '\e960';
 }
+.icon-expand:after {
+  content: '\ea30';
+}
+.icon-collapse:after {
+  content: '\ea31';
+}
+.layout-left-img {
+  width: 20px;
+  height: 20px;
+  background: url("../../images/layout-left.png");
+  margin: auto;
+}
+.layout-top-img {
+  width: 20px;
+  height: 20px;
+  background: url("../../images/layout-top.png");
+  margin: auto;
+}
+.layout-right-img {
+  width: 20px;
+  height: 20px;
+  background: url("../../images/layout-right.png");
+  margin: auto;
+}
 .btn-insert:before {
   content: "";
   position: absolute;

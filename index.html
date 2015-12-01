@@ -39,9 +39,25 @@
             <button class="btn">
                 <i class="icon icon-setting"></i>设置
             </button>
-            <button class="btn">
-                <i class="icon icon-resize"></i>切换视图
-            </button>
+            <div class="view-switcher-area">
+                <button class="btn" id="changeView">
+                    <i class="icon icon-resize"></i>切换视图
+                </button>
+                <div class="view-switcher">
+                    <h3>页面布局</h3>
+                    <div class="layout-buttons">
+                        <a class="active">
+                            <div class="layout-left-img"></div>
+                        </a>
+                        <a>
+                            <div class="layout-top-img"></div>
+                        </a>
+                        <a>
+                            <div class="layout-right-img"></div>
+                        </a>
+                    </div>
+                </div>
+            </div>
             <button class="btn">
                 登录
             </button>
@@ -58,7 +74,7 @@
                       <span>HTML</span>
                    </h2>
                 </div>  <!-- HTML 控制条 -->
-                <div id="box-html" class="box">
+                <div id="box-html" class="box" data-state="mid">
                     <div class="box-title">
                         <div class="box-handle" data-id=0></div> <!-- 拖拽用 -->
                         <div class="box-action-left">
@@ -70,8 +86,8 @@
                             </h2>
                         </div>
                         <div class="box-action-right">
-                            <button class="btn small-btn btn-b-black">
-                                <i class="icon icon-cancel"></i>
+                            <button class="btn small-btn btn-b-black btn-expand">
+                                <i class="icon icon-expand"></i>
                             </button>
                         </div>
                     </div>
@@ -84,7 +100,7 @@
                         <span>CSS</span>
                     </h2>
                 </div>  <!-- CSS控制条 -->
-                <div id="box-css" class="box">
+                <div id="box-css" class="box" data-state="mid">
                     <div class="box-title">
                         <div class="box-handle" id="css_handle" data-id=1></div> <!-- 拖拽用 -->
                         <div class="box-action-left">
@@ -96,8 +112,8 @@
                             </h2>
                         </div>
                         <div class="box-action-right">
-                            <button class="btn small-btn btn-b-black">
-                                <i class="icon icon-cancel"></i>
+                            <button class="btn small-btn btn-b-black btn-expand">
+                                <i class="icon icon-expand"></i>
                             </button>
                         </div>
                     </div>
@@ -110,7 +126,7 @@
                         <span>JS</span>
                     </h2>
                 </div>  <!-- JS控制条 -->
-                <div id="box-js" class="box">
+                <div id="box-js" class="box" data-state="mid">
                     <div class="box-title">
                         <div class="box-handle" id="js_handle" data-id=2></div> <!-- 拖拽用 -->
                         <div class="box-action-left">
@@ -122,8 +138,8 @@
                             </h2>
                         </div>
                         <div class="box-action-right">
-                            <button class="btn small-btn btn-b-black">
-                                <i class="icon icon-cancel"></i>
+                            <button class="btn small-btn btn-b-black btn-expand">
+                                <i class="icon icon-expand"></i>
                             </button>
                         </div>
                     </div>
@@ -169,6 +185,7 @@
                 "height" : window.innerHeight || $(document).height()
             }
         };
+        /*绑定大小拖拽条区*/
         var bindResizer = (function() {
             var $resizer = $("#resizer"),           //拖动条
                     $showBlock = $("#editor-width"),
@@ -271,31 +288,43 @@
                     _dixY,
                     $preEle,
                     $curEle,
-                    $nextEle;
+                    $nextEle,
+                    defaultValue,
+                    openState = false;         //是否打开状态
             var _resizerBorder = {             //修正边框
                 "height" : 3,
                 "width" : 20
             };
             function _init() {
                 _headerHeight = $("header").height();
+                $boxes.off();
+                $(".editor-resizer").off();
+                $(".editor-resizer").removeClass("is-horiz");
                 _resizeDirection = $("body").hasClass("layout-top") ? "horizonal" : "vertical";     //判断方向
+
                 if(_resizeDirection === "vertical") {
                     $boxHandle = $(".box-handle");
+
+                    $boxHandle.off();              //清空所有事件
                     _editorContent = $editor.height();
                     _minRatio = $("#css_handle").height() / _editorContent;
                     _maxRatio = 1 - 2 * _minRatio;
                     _extraRatio = 9 / _editorContent;
+                    defaultValue = changePercent((_editorContent - 3 * _resizerBorder.height) / 3, _editorContent);
                     $boxes.css({
-                        "height" : changePercent((_editorContent - 3 * _resizerBorder.height) / 3, _editorContent)
+                        "height" : defaultValue
                     })
                 }else {
                     $boxHandle = $(".editor-resizer");    //横向
+
+                    $boxHandle.off();              //清空所有事件
                     _editorContent = $editor.width();
                     _minRatio = 0;
                     _maxRatio = (_editorContent - 3 * _resizerBorder.width) / _editorContent;
                     _extraRatio = _resizerBorder.width * 3 / _editorContent;
+                    defaultValue = changePercent((_editorContent - 3 * _resizerBorder.width) / 3, _editorContent);
                     $boxes.css({
-                        "width" : changePercent((_editorContent - 3 * _resizerBorder.width) / 3, _editorContent)
+                        "width" : defaultValue
                     })
                 }
 
@@ -314,7 +343,86 @@
                     }
 
                     $(document).on("mousemove", handleMove).on("mouseup", handleUp);
-                })
+
+                }).on("dblclick", function(event) {
+
+                    event.preventDefault();
+                    var $target = $(event.target),
+                            index = parseInt($target.attr("data-id"));
+                    var $curEle = $($boxes[index]);
+                    var multiValue = _resizeDirection === "vertical" ? Math.abs(parseFloat($curEle[0].style.height) - _maxRatio * 100) : Math.abs(parseFloat($curEle[0].style.width) - _maxRatio * 100) ;    //计算差值
+
+                    $boxes.addClass("boxTransition");
+
+                    if($curEle.attr("data-state") === "mid" && multiValue  > 1) {
+
+                        if(!openState) {
+                            openState = true;
+                        }else {
+                            $boxes.attr("data-state", "mid");
+                        }
+
+                        if(_resizeDirection === "vertical") {
+
+                            $curEle.css({
+                                height : changePercent(_maxRatio)
+                            }).attr("data-state", "full");
+
+                            $(".box[data-state='mid']").css({
+                                height : changePercent(_minRatio)
+                            });
+
+
+                        }else {
+
+                            $curEle.css({
+                                width : changePercent(_maxRatio)
+                            }).attr("data-state", "full").prev().removeClass("is-horiz");
+
+                            $(".box[data-state='mid']").css({
+                                width : changePercent(_minRatio)
+                            });
+
+                            $(".box[data-state='mid']").prev().addClass("is-horiz");
+                        }
+                    }else {
+
+                        if(_resizeDirection === "vertical") {
+
+                            $boxes.css({
+                                height : defaultValue
+                            });
+                        }else {
+
+                            $boxes.css({
+                                width : defaultValue
+                            });
+
+                            $(".box[data-state='mid']").prev().removeClass("is-horiz");
+
+                        }
+                        $curEle.attr("data-state", "mid");    //状态切换
+                        openState = false;
+                    }
+                });
+
+                $boxes.on("webkitTransitionEnd transitionend mozTransitionEnd mozTransitionEnd oTransitionEnd", function(event){
+                    $boxes.removeClass("boxTransition");
+                    window.refresh();
+                });
+
+                $($boxHandle[0]).off("mousedown").on("mousemove", function(event) {
+                    event.preventDefault();
+                });     //删除第一个控制条的全部事件
+
+                //题目不能被选中即可
+                $(".box-title").on("selectstart", function(event){
+                    event.preventDefault()
+                });
+
+                $(".editor-resizer").on("selectstart", function(event){
+                    event.preventDefault()
+                });
             }
 
             function handleMove(event) {
@@ -413,6 +521,7 @@
                             "width" : changePercent(preRatio)
                         })
                     }
+
                     if($preEle.width() < 180) {
                         $preEle.prev().addClass("is-horiz");
                     }else {
@@ -425,15 +534,17 @@
                     }
                     //这里用这个简直了，我醉了
                     try {
-                        if($htmlEle.width() < 180) {
-                            $htmlEle.prev().addClass("is-horiz");
-                        }else{
-                            $htmlEle.prev().removeClass("is-horiz");
-                        }
+                        /*顺序不能颠倒*/
                         if($nextEle.width() < 180) {
                             $nextEle.prev().addClass("is-horiz");
                         }else{
                             $nextEle.prev().removeClass("is-horiz");
+                        }
+
+                        if($htmlEle.width() < 180) {
+                            $htmlEle.prev().addClass("is-horiz");
+                        }else{
+                            $htmlEle.prev().removeClass("is-horiz");
                         }
                     }catch(e){}
                 }
@@ -513,12 +624,65 @@
                 "visibility" : "visible"
             });
 
+            $(".btn-expand").on("click", function(event) {
+                var $target = $(event.target);
+                $target.parents(".box-title").find(".box-handle").trigger("dblclick");
+
+                if($target[0].nodeName === "I") {
+                    var $icon = $target;
+                }else {
+                    var $icon = $target.find("i");
+                }
+                if($icon.hasClass("icon-expand")) {
+                    $icon.removeClass("icon-expand").addClass("icon-collapse");
+                }else {
+                    $icon.removeClass("icon-collapse").addClass("icon-expand");
+                }
+            });
+
+            $("#changeView").on("click", function(event){
+                console.log("开始");
+                var $view = $(this).next();
+
+                if($view.hasClass("view-switcher-active")) {
+                    $view.removeClass("view-switcher-active");
+                    $view.css({
+                        "display" : "none"
+                    });
+                }else {
+                    $view.css({
+                        "display" : "block"
+                    });
+                    setTimeout(function() {
+                        $view.addClass("view-switcher-active");
+                    }, 0)
+                }
+            });
+            $(".layout-buttons").on("click", function(event) {
+
+            });
+
+            $("button").on("mousedown", function(event) {
+                $(this).css({
+                    "transform" : "translateY(2px)"
+                });
+                $(document).on("mouseup", buttonUp);
+            });
+
+            function buttonUp(event) {
+                $("button").css({
+                    "transform" : "translateY(0px)"
+                });
+                $(document).off("mouseup", buttonUp);
+            }
+
             bindResizer.init();
             bindBoxHandle.init();
 
 
             var cssTimeout;    //函数节流
             var htmlTimeout;
+            var jsTimeout;
 
             window.codeCss.on("change", function(codeMirror, obj) {
                 var doc = codeMirror.doc;
@@ -526,14 +690,14 @@
 
                 clearTimeout(cssTimeout);
                 cssTimeout = setTimeout(function() {
-
+                    console.log("CSS刷新");
                     var currStyle = document.createElement("style");
                     currStyle.id = "aimStyle";
                     currStyle.textContent = doc.getValue();
                     iframeDocument.getElementById("aimStyle").remove();    //删除这里
 
                     iframeDocument.head.appendChild(currStyle);
-                }, 2000)
+                }, 1000)
             });
 
             window.codeHtml.on("change", function(codeMirror, obj) {
@@ -543,24 +707,28 @@
 
                 clearTimeout(htmlTimeout);
                 htmlTimeout = setTimeout(function() {
+                    console.log("html刷新");
                     iframeBody.innerHTML = doc.getValue();
-                    window.codeJs.triggerOnKeyDown("change");
-                    window.codeCss.triggerOnKeyDown("change");
-                }, 2000)
+                    window.codeCss.triggerOnKeyUp("change");
+                    window.codeJs.triggerOnKeyUp("change");
+                }, 1000)
             });
 
             window.codeJs.on("change", function(codeMirror, obj) {
-                console.log("发生改变");
                 var doc = codeMirror.doc;
                 iframeDocument = aimIframe.contentWindow.document;
 
-                var currScript = document.createElement("script");
-                currScript.id = "aimScript";
-                currScript.textContent = "try{" + doc.getValue() + "}catch(e){}";   //捕获掉这里所有的异常
-                try {
-                    iframeDocument.getElementById("aimScript").remove();
-                }catch(e){}
-                iframeDocument.body.appendChild(currScript);
+                clearTimeout(jsTimeout);
+                jsTimeout = setTimeout(function() {
+                    console.log("js刷新");
+                    var currScript = document.createElement("script");
+                    currScript.id = "aimScript";
+                    currScript.textContent = "try{" + doc.getValue() + "}catch(e){}";   //捕获掉这里所有的异常
+                    try {
+                        iframeDocument.getElementById("aimScript").remove();
+                    }catch(e){}
+                    iframeDocument.body.appendChild(currScript);
+                }, 1000)
 
             })
 
@@ -576,6 +744,7 @@
                 }
             };
             bindResizer.init();
+            bindBoxHandle.init();
         })
     </script>
 </body>
