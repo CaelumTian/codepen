@@ -46,13 +46,13 @@
                 <div class="view-switcher">
                     <h3>页面布局</h3>
                     <div class="layout-buttons">
-                        <a class="active">
+                        <a class="active" id="left-layout">
                             <div class="layout-left-img"></div>
                         </a>
-                        <a>
+                        <a id="top-layout">
                             <div class="layout-top-img"></div>
                         </a>
-                        <a>
+                        <a id="right-layout">
                             <div class="layout-right-img"></div>
                         </a>
                     </div>
@@ -200,6 +200,7 @@
             var _disX, _disY;
 
             function _init() {
+                $("#editor").attr("style", "");
                 $resizer.off();                 //清除全部事件
                 _resizeDirection = $("body").hasClass("layout-top") ? "horizonal" : "vertical";     //判断方向
                 _resizeRight = $("body").hasClass("layout-right") ? true : false;                  //左右颠倒
@@ -296,6 +297,7 @@
                 "width" : 20
             };
             function _init() {
+                $(".box").attr("style", "");      //无奈只能这么做，保证style正常
                 _headerHeight = $("header").height();
                 $boxes.off();
                 $(".editor-resizer").off();
@@ -579,6 +581,7 @@
             var aimIframe = document.getElementById("aimIframe");
             var iframeDocument;
             var iframeBody;
+            var aLayout = $(".layout-buttons").find("a");
 
             window.codeHtml = CodeMirror.fromTextArea(document.getElementById("code-html"), {
                 lineNumbers: true,
@@ -658,9 +661,28 @@
                     }, 0)
                 }
             });
-            $(".layout-buttons").on("click", function(event) {
 
+
+            $("#top-layout").on("click", function(event) {
+                aLayout.removeClass("active");
+                $(this).addClass("active");
+                $("body").removeClass().addClass("layout-top editor");
+                window.reset();
             });
+
+            $("#left-layout").on("click", function(event) {
+                aLayout.removeClass("active");
+                $(this).addClass("active");
+                $("body").removeClass().addClass("layout-side editor");
+                window.reset();
+            });
+            $("#right-layout").on("click", function(event) {
+                aLayout.removeClass("active");
+                $(this).addClass("active");
+                $("body").removeClass().addClass("layout-side editor layout-right");
+                window.reset();
+            });
+
 
             $("button").on("mousedown", function(event) {
                 $(this).css({
@@ -734,8 +756,7 @@
 
         });
 
-        /*浏览器窗口发生变化，重置所有内容*/
-        $(window).on("resize", function() {
+        window.reset = function() {
             console.log("重置");
             window.sc = {
                 winSize : {
@@ -745,6 +766,11 @@
             };
             bindResizer.init();
             bindBoxHandle.init();
+        };
+
+        /*浏览器窗口发生变化，重置所有内容*/
+        $(window).on("resize", function() {
+            window.reset();
         })
     </script>
 </body>

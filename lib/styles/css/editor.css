@@ -166,7 +166,7 @@ body.layout-top .box-visual-title {
   -webkit-transform-origin: left center;
       -ms-transform-origin: left center;
           transform-origin: left center;
-  z-index: 100;
+  z-index: 5;
 }
 body.layout-top .box-action-left h2 span {
   visibility: hidden;
