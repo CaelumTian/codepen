@@ -1,3 +1,4 @@
+/* 1rem = 10px */
 .main-header {
   height: 69px;
   min-width: 1000px;
@@ -37,6 +38,24 @@ i {
 }
 .icon-info:after {
   content: '\ea1b';
+}
+.icon-pencil:after {
+  content: '\e9f3';
+}
+.icon-folder:after {
+  content: '\e970';
+}
+.icon-eye:after {
+  content: '\e961';
+}
+.icon-heart:after {
+  content: '\ea19';
+}
+.icon-chat:after {
+  content: '\e9dc';
+}
+.icon-link {
+  color: #0ebeff;
 }
 .layout-left-img {
   width: 20px;
@@ -125,4 +144,69 @@ textarea {
 input:focus,
 textarea:focus {
   border-color: #222;
+}
+/*****************************/
+.main-header {
+  background-color: #000000;
+  display: flex;
+  position: relative;
+  z-index: 10;
+}
+.title-area {
+  padding: 10px 15px 0 15px;
+  white-space: nowrap;
+  display: flex;
+  flex: 3;
+}
+.title-area .logo {
+  width: 35px;
+}
+.title-area .logo img {
+  width: 70%;
+  margin-top: 3px;
+}
+.header-chunk {
+  display: flex;
+  justify-content: flex-end;
+}
+.header-chunk button {
+  align-self: center;
+  background: #343436;
+  margin-right: 15px;
+}
+.header-chunk button:hover {
+  border: 3px solid #343436;
+  background: #484747;
+}
+.header-chunk button i {
+  margin-right: 5px;
+  vertical-align: -1px;
+}
+.header-nav {
+  display: flex;
+  flex: 1;
+}
+.header-nav ul {
+  display: flex;
+}
+.header-nav ul li {
+  font-size: 1.6rem;
+  margin-right: 15px;
+  padding-top: 10px;
+  font-weight: bold;
+}
+.header-nav ul li a {
+  color: #ffffff;
+}
+.header-nav ul li.activeBlue:hover {
+  border-bottom: 4px solid #76daff;
+}
+.header-nav ul li.activeGreen:hover {
+  border-bottom: 4px solid #47CF73;
+}
+.header-nav ul li.activeOrange:hover {
+  border-bottom: 4px solid #FFA400;
+}
+.header-nav .mobile-nav {
+  display: none;
 }

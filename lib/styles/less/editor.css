@@ -145,26 +145,6 @@ body.layout-right #editor {
 body.layout-right .resizer {
   order: 2;
 }
-/*****************************/
-.main-header {
-  background-color: #000000;
-  display: flex;
-  position: relative;
-  z-index: 10;
-}
-.title-area {
-  padding: 10px 15px 0 15px;
-  white-space: nowrap;
-  display: flex;
-  flex: 3;
-}
-.title-area .logo {
-  width: 35px;
-}
-.title-area .logo img {
-  width: 70%;
-  margin-top: 3px;
-}
 .title-text {
   width: 100%;
   overflow: hidden;
@@ -184,23 +164,6 @@ body.layout-right .resizer {
 }
 #pen-title a {
   color: inherit;
-}
-.header-chunk {
-  display: flex;
-  justify-content: flex-end;
-}
-.header-chunk button {
-  align-self: center;
-  background: #343436;
-  margin-right: 15px;
-}
-.header-chunk button:hover {
-  border: 3px solid #343436;
-  background: #484747;
-}
-.header-chunk button i {
-  margin-right: 5px;
-  vertical-align: -1px;
 }
 .page-wrap {
   flex: 1;

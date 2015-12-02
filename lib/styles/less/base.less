@@ -1,5 +1,10 @@
 @btn-b-black: #343436;
 @btnHoverColor: #484747;
+/* 1rem = 10px */
+@bgEditColor: #1d1f10;
+@bodyColor: #ffffff;
+@btnBgColor: #343436;
+@boxBgColor: #1d1f20;
 .main-header {
   height: 69px;
   min-width: 1000px;
@@ -42,6 +47,24 @@ i {
 }
 .icon-info:after {
   content: '\ea1b';
+}
+.icon-pencil:after {
+  content: '\e9f3';
+}
+.icon-folder:after {
+  content: '\e970';
+}
+.icon-eye:after {
+  content: '\e961';
+}
+.icon-heart:after {
+  content: '\ea19';
+}
+.icon-chat:after {
+  content: '\e9dc';
+}
+.icon-link {
+  color: #0ebeff;
 }
 .layout-left-img {
   width: 20px;
@@ -127,5 +150,70 @@ input, textarea{
   border-radius: 2px;
   &:focus {
     border-color: #222;
+  }
+}
+/*****************************/
+.main-header {
+  background-color: #000000;
+  display: flex;
+  position: relative;
+  z-index:10;
+}
+.title-area {
+  padding: 10px 15px 0 15px;
+  white-space: nowrap;
+  display: flex;
+  flex: 3;
+  .logo {
+    width: 35px;
+    img {
+      width:70%;
+      margin-top: 3px;
+    }
+  }
+}
+.header-chunk {
+  display: flex;
+  justify-content: flex-end;
+  button {
+    align-self: center;
+    background: @btnBgColor;
+    margin-right: 15px;
+    &:hover {
+      border: 3px solid #343436;
+      background: #484747;
+    }
+    i {
+      margin-right: 5px;
+      vertical-align: -1px;
+    }
+  }
+}
+.header-nav {
+  display: flex;
+  flex: 1;
+  ul {
+    display: flex;
+    li {
+      font-size: 1.6rem;
+      margin-right: 15px;
+      padding-top: 10px;
+      font-weight: bold;
+      a {
+        color: #ffffff;
+      }
+      &.activeBlue:hover {
+        border-bottom: 4px solid #76daff;
+      }
+      &.activeGreen:hover {
+        border-bottom: 4px solid #47CF73;
+      }
+      &.activeOrange:hover {
+        border-bottom: 4px solid #FFA400;
+      }
+    }
+  }
+  .mobile-nav {
+    display: none;
   }
 }
