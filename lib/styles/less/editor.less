@@ -378,6 +378,127 @@ body.layout-right {
   transition-property: height width;
   transition-duration: 0.4s;
 }
+.alert-message {
+  position: fixed;
+  z-index: 300;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 3px 10px 4px;
+  color: #000000;
+  border-radius: 0 0 5px 5px;
+  background-color: #FEDD31;
+  transition: opacity 0.6s ease;
+}
+.popup-modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 500;
+}
+.pen-setting {
+  width: 50%;
+  min-width: 400px;
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  left: 50%;
+  top: 0px;
+  transform: translate3d(0%, 70px, 0) scale(0.7);
+  max-height: 75vh;
+  max-width: 1150px;
+  z-index: -1;
+  background: #ffffff;
+  opacity: 0.3;
+  display: none;
+  .setting-content {
+    padding: 20px;
+    display: flex;
+    color: #222;
+    max-height: 75vh;
+    overflow: auto;
+    position: relative;
+    flex-direction: column;
+    h2 {
+      border-bottom: 3px solid #ccc;
+      font-size: 2.3rem;
+      font-weight: bold;
+      padding-bottom: 5px;
+      margin: 0;
+      flex: 1;
+    }
+    .infoContent {
+      display: none;
+      h4 {
+        font-size: 1.4rem;
+        font-weight: bold;
+        padding: 10px;
+      }
+      i {
+        color: #222;
+        float: right;
+        font-size: 1.7rem;
+        margin-top: -0.2rem;
+        cursor: pointer;
+        display: inline-block;
+        position: relative;
+        &:hover {
+          color: #999;
+        }
+      }
+      input {
+        margin-bottom: 10px;
+      }
+      textarea {
+        min-height: 100px;
+        resize: vertical;
+      }
+    }
+    div.active {
+      display: block;
+    }
+  }
+  .explore-tabs {
+    a {
+      color: #999;
+      font-size: 1.7rem;
+      display: inline-block;
+      outline: 0;
+      padding: 10px;
+      cursor: pointer;
+      &.active {
+        font-weight: bold;
+        color: #222;
+      }
+      &:hover {
+        color: #222;
+      }
+    }
+  }
+}
+.pen-setting-active {
+  z-index: 600;
+  transform: translate3d(-50%, 70px, 0) scale(1);
+  opacity: 1;
+  transition: opacity,transform 0.4s cubic-bezier(0.07, 0.05, 0.34, 1.95);
+}
+.save-and-close {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-top: 20px;
+  transform: translateX(-50%);
+  button {
+    background: #FEDD31 !important;
+    transform: translateY(0px);
+    font-weight: bold !important;
+    font-size: 2rem;
+  }
+}
 .a-wobble {
   animation:1s ease;
 }

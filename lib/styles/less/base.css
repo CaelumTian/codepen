@@ -35,6 +35,9 @@ i {
 .icon-collapse:after {
   content: '\ea31';
 }
+.icon-info:after {
+  content: '\ea1b';
+}
 .layout-left-img {
   width: 20px;
   height: 20px;
@@ -105,4 +108,21 @@ i {
 .CodeMirror-overlayscroll-horizontal div,
 .CodeMirror-overlayscroll-vertical div {
   background: #666;
+}
+input,
+textarea {
+  -webkit-appearance: none;
+  background-color: #f3f0e8;
+  padding: 10px;
+  width: 100%;
+  font-size: 13px;
+  outline: 0;
+  border: 3px solid #ccc;
+  -webkit-transition: border-color 0.3s;
+  transition: border-color 0.3s;
+  border-radius: 2px;
+}
+input:focus,
+textarea:focus {
+  border-color: #222;
 }
