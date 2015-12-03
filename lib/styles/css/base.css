@@ -106,6 +106,9 @@ i {
 .btn:hover {
   background: #484747;
 }
+.btn a {
+  color: #fff;
+}
 .btn-b-black {
   background: #343436;
   color: white !important;

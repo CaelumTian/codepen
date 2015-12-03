@@ -67,7 +67,7 @@
                 <button class="btn">关注我们</button>
             </div>
         </div>
-        <iframe src="./bgviews/monster/index.html" frameborder="0" scrolling="no"></iframe>
+        <iframe src="./bgviews/monster/index.html" frameborder="0" scrolling="no" id="bgFrame" style="display:none;"></iframe>
         <div class="bg-modal"></div>
     </section>
     <div class="width-wrapper">
@@ -357,6 +357,7 @@
     <script src="./lib/scripts/jquery-2.1.4.js"></script>
     <script>
         jQuery(document).ready(function($) {
+            var $bg = $("#bgFrame");
             $("button").on("mousedown", function(event) {
                 $(this).css({
                     "transform" : "translateY(2px)"
@@ -369,6 +370,15 @@
                 });
                 $(document).off("mouseup", buttonUp);
             }
+
+            $("#code-setting").on("click", function(event) {
+                window.location.href = "./editor.html"
+            });
+            $bg.on("load", function(event) {
+                $(this).css({
+                    "display" : "block"
+                })
+            })
         })
     </script>
 </body>

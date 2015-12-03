@@ -88,6 +88,7 @@ body {
   position: relative;
   padding: 0 20px;
   color: #ffffff;
+  background: #191919;
 }
 .width-wrapper .home-section {
   text-align: left;
@@ -281,6 +282,7 @@ body {
 }
 .link-footer .copyright p {
   font-family: 微软雅黑;
+  font-size: 1.3rem;
 }
 .link-footer .copyright p:last-child {
   font-style: italic;
@@ -332,7 +334,7 @@ body {
     display: none !important;
   }
   .btn {
-    font-size: 1rem !important;
+    font-size: 1.2rem !important;
   }
 }
 @media (max-width: 830px) {
@@ -397,25 +399,25 @@ body {
     font-size: 1.3rem !important;
   }
   .buttongroup button {
-    font-size: 1rem !important;
+    font-size: 1.2rem !important;
   }
   .title-header h1 {
     font-size: 2rem !important;
   }
   .more-link {
-    font-size: 1rem !important;
+    font-size: 1.2rem !important;
   }
   .meta .pen-title {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   .meta .stats .single-stat {
     font-size: 1rem;
   }
   .meta .user .username {
-    font-size: 1rem;
+    font-size: 1.2rem;
   }
   .home-section iframe {
-    display: none;
+    display: none !important;
   }
   .home-section .bg-modal {
     background: url("../../images/bg-mobile.png");
